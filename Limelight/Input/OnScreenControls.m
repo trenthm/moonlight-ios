@@ -18,6 +18,7 @@
 (y) ? (buttonFlags | (x)) : (buttonFlags & ~(x)))
 
 @implementation OnScreenControls {
+    CALayer* _opacityChangerButton;
     CALayer* _aButton;
     CALayer* _bButton;
     CALayer* _xButton;
@@ -74,6 +75,10 @@
     NSMutableArray* _deadTouches;
 }
 
+//static const float buttonInactiveOpacity = 0.1f;
+static const float buttonInactiveOpacity = 0.00001f;
+static const float buttonActiveOpacity = 0.5f;
+
 static const float EDGE_WIDTH = .05;
 
 //static const float BUTTON_SIZE = 50;
@@ -95,6 +100,7 @@ static float LS_CENTER_X;
 static float LS_CENTER_Y;
 static float RS_CENTER_X;
 static float RS_CENTER_Y;
+
 
 static float START_X;
 static float START_Y;
@@ -290,7 +296,7 @@ static float L3_Y;
     
     L2_Y = _controlArea.size.height * .9 + _controlArea.origin.y;
     L2_X = _controlArea.size.width * .1 + _controlArea.origin.x;
-
+    
     R2_Y = _controlArea.size.height * .9 + _controlArea.origin.y;
     R2_X = _controlArea.size.width * .9 + _controlArea.origin.x;
     
@@ -357,9 +363,19 @@ static float L3_Y;
     }
 }
 
+//- (void) drawOpacityButton {
+//    // create A button
+//    UIImage* opacityButtonImage = [UIImage imageNamed:@"AButton"];
+//    _opacityChangerButton.opacity = 0.5f;
+//    _opacityChangerButton.contents = (id) opacityButtonImage.CGImage;
+//    _opacityChangerButton.frame = CGRectMake(0, 0, _view.frame.size.width * 0.1, _view.frame.size.height * 0.1);
+//    [_view.layer addSublayer:_opacityChangerButton];
+//}
+
 - (void) drawButtons {
     // create A button
     UIImage* aButtonImage = [UIImage imageNamed:@"AButton"];
+    //    _aButton.opacity = 0.1f;
     _aButton.contents = (id) aButtonImage.CGImage;
     _aButton.frame = CGRectMake(BUTTON_CENTER_X - aButtonImage.size.width / 2, BUTTON_CENTER_Y + BUTTON_DIST, aButtonImage.size.width, aButtonImage.size.height);
     [_view.layer addSublayer:_aButton];
@@ -410,12 +426,14 @@ static float L3_Y;
 - (void) drawStartSelect {
     // create Start button
     UIImage* startButtonImage = [UIImage imageNamed:@"StartButton"];
+    _startButton.opacity = buttonInactiveOpacity;
     _startButton.frame = CGRectMake(START_X - startButtonImage.size.width / 2, START_Y - startButtonImage.size.height / 2, startButtonImage.size.width, startButtonImage.size.height);
     _startButton.contents = (id) startButtonImage.CGImage;
     [_view.layer addSublayer:_startButton];
     
     // create Select button
     UIImage* selectButtonImage = [UIImage imageNamed:@"SelectButton"];
+    _selectButton.opacity = buttonInactiveOpacity;
     _selectButton.frame = CGRectMake(SELECT_X - selectButtonImage.size.width / 2, SELECT_Y - selectButtonImage.size.height / 2, selectButtonImage.size.width, selectButtonImage.size.height);
     _selectButton.contents = (id) selectButtonImage.CGImage;
     [_view.layer addSublayer:_selectButton];
@@ -478,6 +496,7 @@ static float L3_Y;
 
 - (void) drawL3R3 {
     UIImage* l3ButtonImage = [UIImage imageNamed:@"L3"];
+    _l3Button.opacity = buttonInactiveOpacity;
     _l3Button.frame = CGRectMake(L3_X - l3ButtonImage.size.width / 2, L3_Y - l3ButtonImage.size.height / 2, l3ButtonImage.size.width, l3ButtonImage.size.height);
     _l3Button.contents = (id) l3ButtonImage.CGImage;
     _l3Button.cornerRadius = l3ButtonImage.size.width / 2;
@@ -485,6 +504,7 @@ static float L3_Y;
     [_view.layer addSublayer:_l3Button];
     
     UIImage* r3ButtonImage = [UIImage imageNamed:@"R3"];
+    _r3Button.opacity = buttonInactiveOpacity;
     _r3Button.frame = CGRectMake(R3_X - r3ButtonImage.size.width / 2, R3_Y - r3ButtonImage.size.height / 2, r3ButtonImage.size.width, r3ButtonImage.size.height);
     _r3Button.contents = (id) r3ButtonImage.CGImage;
     _r3Button.cornerRadius = r3ButtonImage.size.width / 2;
@@ -632,14 +652,21 @@ static float L3_Y;
     if (updated) {
         [_controllerSupport updateFinished:_controller];
     }
-        return updated || buttonTouch;
+    return updated || buttonTouch;
 }
+
 
 - (BOOL)handleTouchDownEvent:touches {
     BOOL updated = false;
     BOOL stickTouch = false;
     for (UITouch* touch in touches) {
         CGPoint touchLocation = [touch locationInView:_view];
+        
+        //        if ([_opacityChangerButton.presentationLayer hitTest:touchLocation]) {
+        ////            [_controllerSupport setButtonFlag:_controller flags:A_FLAG];
+        ////            _aTouch = touch;
+        ////            updated = true;
+        //            updated = true;
         
         if ([_aButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:A_FLAG];
@@ -676,10 +703,12 @@ static float L3_Y;
         } else if ([_startButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:PLAY_FLAG];
             _startTouch = touch;
+            _startButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_selectButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:BACK_FLAG];
             _selectTouch = touch;
+            _selectButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_l1Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:LB_FLAG];
@@ -700,9 +729,11 @@ static float L3_Y;
         } else if ([_l3Button.presentationLayer hitTest:touchLocation]) {
             if (l3Set) {
                 [_controllerSupport clearButtonFlag:_controller flags:LS_CLK_FLAG];
+                _l3Button.opacity = buttonInactiveOpacity;
                 _l3Button.borderWidth = 0.0f;
             } else {
                 [_controllerSupport setButtonFlag:_controller flags:LS_CLK_FLAG];
+                _l3Button.opacity = buttonActiveOpacity;
                 _l3Button.borderWidth = 2.0f;
             }
             l3Set = !l3Set;
@@ -711,9 +742,11 @@ static float L3_Y;
         } else if ([_r3Button.presentationLayer hitTest:touchLocation]) {
             if (r3Set) {
                 [_controllerSupport clearButtonFlag:_controller flags:RS_CLK_FLAG];
+                _r3Button.opacity = buttonInactiveOpacity;
                 _r3Button.borderWidth = 0.0f;
             } else {
                 [_controllerSupport setButtonFlag:_controller flags:RS_CLK_FLAG];
+                _r3Button.opacity = buttonActiveOpacity;
                 _r3Button.borderWidth = 2.0f;
             }
             r3Set = !r3Set;
@@ -786,9 +819,11 @@ static float L3_Y;
             [_controllerSupport clearButtonFlag:_controller flags:PLAY_FLAG];
             _startTouch = nil;
             updated = true;
+            _startButton.opacity = buttonInactiveOpacity;
         } else if (touch == _selectTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:BACK_FLAG];
             _selectTouch = nil;
+            _selectButton.opacity = buttonInactiveOpacity;
             updated = true;
         } else if (touch == _l1Touch) {
             [_controllerSupport clearButtonFlag:_controller flags:LB_FLAG];
