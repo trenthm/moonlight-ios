@@ -76,8 +76,11 @@
 }
 
 //static const float buttonInactiveOpacity = 0.1f;
+static const float fullControlsInactiveOpacity = 0.2f;
 static const float buttonInactiveOpacity = 0.00001f;
+float chosenInactiveOpacity = fullControlsInactiveOpacity;
 static const float buttonActiveOpacity = 0.5f;
+
 
 static const float EDGE_WIDTH = .05;
 
@@ -207,6 +210,10 @@ static float L3_Y;
             [self drawStartSelect];
             [self hideSticks];
             [self drawL3R3];
+            
+            chosenInactiveOpacity = buttonInactiveOpacity;
+//            _l3Button.opacity = buttonInactiveOpacity;
+//            _r3Button.opacity = buttonInactiveOpacity;
             break;
         case OnScreenControlsLevelSimple:
             [self setupSimpleControls];
@@ -232,6 +239,28 @@ static float L3_Y;
             Log(LOG_W, @"Unknown on-screen controls level: %d", (int)_level);
             break;
     }
+    
+    _aButton.opacity = chosenInactiveOpacity;
+    _bButton.opacity = chosenInactiveOpacity;
+    _xButton.opacity = chosenInactiveOpacity;
+    _yButton.opacity = chosenInactiveOpacity;
+    _upButton.opacity = chosenInactiveOpacity;
+    _downButton.opacity = chosenInactiveOpacity;
+    _leftButton.opacity = chosenInactiveOpacity;
+    _rightButton.opacity = chosenInactiveOpacity;
+    _l1Button.opacity = chosenInactiveOpacity;
+    _r1Button.opacity = chosenInactiveOpacity;
+    _l2Button.opacity = chosenInactiveOpacity;
+    _r2Button.opacity = chosenInactiveOpacity;
+    _l3Button.opacity = chosenInactiveOpacity;
+    _r3Button.opacity = chosenInactiveOpacity;
+    _startButton.opacity = chosenInactiveOpacity;
+    _selectButton.opacity = chosenInactiveOpacity;
+    _leftStickBackground.opacity = chosenInactiveOpacity;
+    _rightStickBackground.opacity = chosenInactiveOpacity;
+    _leftStick.opacity = chosenInactiveOpacity;
+    _rightStick.opacity = chosenInactiveOpacity;
+    _edge.opacity = chosenInactiveOpacity;
 }
 
 - (void) setupEdgeDetection {
@@ -496,7 +525,7 @@ static float L3_Y;
 
 - (void) drawL3R3 {
     UIImage* l3ButtonImage = [UIImage imageNamed:@"L3"];
-    _l3Button.opacity = buttonInactiveOpacity;
+//    _l3Button.opacity = buttonInactiveOpacity;
     _l3Button.frame = CGRectMake(L3_X - l3ButtonImage.size.width / 2, L3_Y - l3ButtonImage.size.height / 2, l3ButtonImage.size.width, l3ButtonImage.size.height);
     _l3Button.contents = (id) l3ButtonImage.CGImage;
     _l3Button.cornerRadius = l3ButtonImage.size.width / 2;
@@ -504,7 +533,7 @@ static float L3_Y;
     [_view.layer addSublayer:_l3Button];
     
     UIImage* r3ButtonImage = [UIImage imageNamed:@"R3"];
-    _r3Button.opacity = buttonInactiveOpacity;
+//    _r3Button.opacity = buttonInactiveOpacity;
     _r3Button.frame = CGRectMake(R3_X - r3ButtonImage.size.width / 2, R3_Y - r3ButtonImage.size.height / 2, r3ButtonImage.size.width, r3ButtonImage.size.height);
     _r3Button.contents = (id) r3ButtonImage.CGImage;
     _r3Button.cornerRadius = r3ButtonImage.size.width / 2;
@@ -671,34 +700,42 @@ static float L3_Y;
         if ([_aButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:A_FLAG];
             _aTouch = touch;
+            _aButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_bButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:B_FLAG];
             _bTouch = touch;
+            _bButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_xButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:X_FLAG];
             _xTouch = touch;
+            _xButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_yButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:Y_FLAG];
             _yTouch = touch;
+            _yButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_upButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:UP_FLAG];
             _dpadTouch = touch;
+            _upButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_downButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:DOWN_FLAG];
             _dpadTouch = touch;
+            _downButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_leftButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:LEFT_FLAG];
             _dpadTouch = touch;
+            _leftButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_rightButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:RIGHT_FLAG];
             _dpadTouch = touch;
+            _rightButton.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_startButton.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:PLAY_FLAG];
@@ -713,23 +750,27 @@ static float L3_Y;
         } else if ([_l1Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:LB_FLAG];
             _l1Touch = touch;
+            _l1Button.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_r1Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport setButtonFlag:_controller flags:RB_FLAG];
             _r1Touch = touch;
+            _r1Button.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_l2Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport updateLeftTrigger:_controller left:0xFF];
             _l2Touch = touch;
+            _l2Button.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_r2Button.presentationLayer hitTest:touchLocation]) {
             [_controllerSupport updateRightTrigger:_controller right:0xFF];
             _r2Touch = touch;
+            _r2Button.opacity = buttonActiveOpacity;
             updated = true;
         } else if ([_l3Button.presentationLayer hitTest:touchLocation]) {
             if (l3Set) {
                 [_controllerSupport clearButtonFlag:_controller flags:LS_CLK_FLAG];
-                _l3Button.opacity = buttonInactiveOpacity;
+                _l3Button.opacity = chosenInactiveOpacity;
                 _l3Button.borderWidth = 0.0f;
             } else {
                 [_controllerSupport setButtonFlag:_controller flags:LS_CLK_FLAG];
@@ -742,7 +783,7 @@ static float L3_Y;
         } else if ([_r3Button.presentationLayer hitTest:touchLocation]) {
             if (r3Set) {
                 [_controllerSupport clearButtonFlag:_controller flags:RS_CLK_FLAG];
-                _r3Button.opacity = buttonInactiveOpacity;
+                _r3Button.opacity = chosenInactiveOpacity;
                 _r3Button.borderWidth = 0.0f;
             } else {
                 [_controllerSupport setButtonFlag:_controller flags:RS_CLK_FLAG];
@@ -763,6 +804,8 @@ static float L3_Y;
                 }
             }
             _lsTouch = touch;
+            _leftStick.opacity = buttonActiveOpacity;
+            _leftStickBackground.opacity = buttonActiveOpacity;
             stickTouch = true;
         } else if ([_rightStick.presentationLayer hitTest:touchLocation]) {
             if (r3TouchStart != nil) {
@@ -775,9 +818,12 @@ static float L3_Y;
                 }
             }
             _rsTouch = touch;
+            _rightStick.opacity = buttonActiveOpacity;
+            _rightStickBackground.opacity = buttonActiveOpacity;
             stickTouch = true;
         } else if ([_edge.presentationLayer hitTest:touchLocation]) {
             _edgeTouch = touch;
+            _edge.opacity = buttonActiveOpacity;
         }
         if (!updated && !stickTouch && [self isInDeadZone:touch]) {
             [_deadTouches addObject:touch];
@@ -797,55 +843,69 @@ static float L3_Y;
         if (touch == _aTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:A_FLAG];
             _aTouch = nil;
+            _aButton.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _bTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:B_FLAG];
             _bTouch = nil;
+            _bButton.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _xTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:X_FLAG];
             _xTouch = nil;
+            _xButton.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _yTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:Y_FLAG];
             _yTouch = nil;
+            _yButton.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _dpadTouch) {
             [_controllerSupport clearButtonFlag:_controller
                                           flags:UP_FLAG | DOWN_FLAG | LEFT_FLAG | RIGHT_FLAG];
             _dpadTouch = nil;
+            _upButton.opacity = chosenInactiveOpacity;
+            _downButton.opacity = chosenInactiveOpacity;
+            _leftButton.opacity = chosenInactiveOpacity;
+            _rightButton.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _startTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:PLAY_FLAG];
             _startTouch = nil;
             updated = true;
-            _startButton.opacity = buttonInactiveOpacity;
+            _startButton.opacity = chosenInactiveOpacity;
         } else if (touch == _selectTouch) {
             [_controllerSupport clearButtonFlag:_controller flags:BACK_FLAG];
             _selectTouch = nil;
-            _selectButton.opacity = buttonInactiveOpacity;
+            _selectButton.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _l1Touch) {
             [_controllerSupport clearButtonFlag:_controller flags:LB_FLAG];
             _l1Touch = nil;
+            _l1Button.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _r1Touch) {
             [_controllerSupport clearButtonFlag:_controller flags:RB_FLAG];
             _r1Touch = nil;
+            _r1Button.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _l2Touch) {
             [_controllerSupport updateLeftTrigger:_controller left:0];
             _l2Touch = nil;
+            _l2Button.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _r2Touch) {
             [_controllerSupport updateRightTrigger:_controller right:0];
             _r2Touch = nil;
+            _r2Button.opacity = chosenInactiveOpacity;
             updated = true;
         } else if (touch == _lsTouch) {
             _leftStick.frame = CGRectMake(LS_CENTER_X - STICK_INNER_SIZE / 2, LS_CENTER_Y - STICK_INNER_SIZE / 2, STICK_INNER_SIZE, STICK_INNER_SIZE);
             [_controllerSupport updateLeftStick:_controller x:0 y:0];
             [_controllerSupport clearButtonFlag:_controller flags:LS_CLK_FLAG];
             l3TouchStart = [NSDate date];
+            _leftStick.opacity = chosenInactiveOpacity;
+            _leftStickBackground.opacity = chosenInactiveOpacity;
             _lsTouch = nil;
             updated = true;
         } else if (touch == _rsTouch) {
@@ -853,18 +913,23 @@ static float L3_Y;
             [_controllerSupport updateRightStick:_controller x:0 y:0];
             [_controllerSupport clearButtonFlag:_controller flags:RS_CLK_FLAG];
             r3TouchStart = [NSDate date];
+            _rightStick.opacity = chosenInactiveOpacity;
+            _rightStickBackground.opacity = chosenInactiveOpacity;
             _rsTouch = nil;
             updated = true;
         }
         else if (touch == _l3Touch) {
             _l3Touch = nil;
+            _l3Button.opacity = chosenInactiveOpacity;
             touched = true;
         }
         else if (touch == _r3Touch) {
             _r3Touch = nil;
+            _r3Button.opacity = chosenInactiveOpacity;
             touched = true;
         } else if (touch == _edgeTouch) {
             _edgeTouch = nil;
+            _edge.opacity = chosenInactiveOpacity;
             if ([touch locationInView:_view].x >= _view.frame.size.width / 4) {
                 [_edgeDelegate edgeSwiped];
             }
